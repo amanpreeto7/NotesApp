@@ -6,4 +6,9 @@
     <string name="description">Description</string>
     <string name="enter_title">Enter Title</string>
     <string name="enter_description">Enter Description</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="delete_msg">Do you want to delete the note?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.o7solutions.notesapp
 
+import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
@@ -8,8 +9,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
-    var noteList = arrayListOf<Notes>()
+   // var noteList = arrayListOf<Notes>()
     lateinit var bottomView : BottomNavigationView
+    lateinit var notesDB: NotesDB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +28,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             return@setOnItemSelectedListener true
+        }
+
+        class AClass : AsyncTask<Void, Void, Void>(){
+            override fun doInBackground(vararg params: Void?): Void {
+                TODO("Not yet implemented")
+            }
         }
     }
 }

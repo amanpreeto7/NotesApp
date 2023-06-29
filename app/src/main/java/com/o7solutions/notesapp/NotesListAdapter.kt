@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.TextView
 
 /**
@@ -11,7 +12,8 @@ import android.widget.TextView
  * @Date: 24/06/23
  * @Time: 10:28 am
  */
-class NotesListAdapter(var list: ArrayList<Notes>) : BaseAdapter(){
+class NotesListAdapter(var list: ArrayList<Notes>,
+                       var notesClickInterface: NotesClickInterface) : BaseAdapter(){
     override fun getCount(): Int {
         return list.size
     }
@@ -30,6 +32,17 @@ class NotesListAdapter(var list: ArrayList<Notes>) : BaseAdapter(){
         var description = view.findViewById<TextView>(R.id.tvDescription)
         title.setText(list[position].title)
         description.setText(list[position].description)
+
+        var btnEdit = view.findViewById<Button>(R.id.btnEdit)
+        var btnDelete = view.findViewById<Button>(R.id.btnDelete)
+
+        btnDelete.setOnClickListener {
+            notesClickInterface.onDeleteClick(list[position])
+        }
+
+        btnEdit.setOnClickListener {
+            notesClickInterface.onEditClick(list[position])
+        }
         return view
     }
 }
