@@ -1,5 +1,6 @@
 package com.o7solutions.notesapp
 
+import android.app.DatePickerDialog
 import android.os.AsyncTask
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.o7solutions.notesapp.databinding.FragmentAddNotesBinding
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,7 +28,7 @@ class AddNotesFragment : Fragment() {
     lateinit var binding: FragmentAddNotesBinding
     lateinit var mainActivity: MainActivity
     lateinit var notesDB: NotesDB
-    var id = -1
+    private var id = -1
     var notes = Notes()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +61,7 @@ class AddNotesFragment : Fragment() {
             }else{
                 if(id >-1){
                     var note = Notes(id= notes.id, title= binding.etTitle.text.toString(), description = binding.etDescription.text.toString())
-                    class insertClass : AsyncTask<Void, Void, Void>(){
+                    class updateClass : AsyncTask<Void, Void, Void>(){
                         override fun doInBackground(vararg params: Void?): Void? {
                             notesDB.notesDbInterface().updateNoted(note)
                             return null
@@ -70,7 +73,7 @@ class AddNotesFragment : Fragment() {
 
                         }
                     }
-                    insertClass().execute()
+                    updateClass().execute()
                 }else{
                     var note = Notes(title= binding.etTitle.text.toString(), description = binding.etDescription.text.toString())
                     class insertClass : AsyncTask<Void, Void, Void>(){
@@ -89,6 +92,19 @@ class AddNotesFragment : Fragment() {
                 }
                 //mainActivity.noteList.add(note)
             }
+        }
+
+        binding.tvPickDate.setOnClickListener {
+            var datePicker = DatePickerDialog(mainActivity, {_,year, month, date->
+                var simpleDateFormat = SimpleDateFormat("dd-MMM-yyyy")
+                var calendar = Calendar.getInstance()
+                calendar.set(year, month, date)
+                var selectedDate = simpleDateFormat.format(calendar.time)
+                System.out.println("in selected Date $selectedDate")
+            }, Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH),
+                Calendar.getInstance().get(Calendar.DATE))
+            datePicker.show()
         }
         return binding.root
     }
