@@ -56,20 +56,37 @@ class AddNotesFragment : Fragment() {
             }else if(binding.etDescription.text.toString().isNullOrBlank()){
                 binding.etDescription.error = mainActivity.resources.getString(R.string.enter_description)
             }else{
-                var note = Notes(title= binding.etTitle.text.toString(), description = binding.etDescription.text.toString())
-                class insertClass : AsyncTask<Void, Void, Void>(){
-                    override fun doInBackground(vararg params: Void?): Void? {
-                        notesDB.notesDbInterface().insertNotes(note)
-                        return null
-                    }
+                if(id >-1){
+                    var note = Notes(id= notes.id, title= binding.etTitle.text.toString(), description = binding.etDescription.text.toString())
+                    class insertClass : AsyncTask<Void, Void, Void>(){
+                        override fun doInBackground(vararg params: Void?): Void? {
+                            notesDB.notesDbInterface().updateNoted(note)
+                            return null
+                        }
 
-                    override fun onPostExecute(result: Void?) {
-                        super.onPostExecute(result)
-                        mainActivity.navController.popBackStack()
+                        override fun onPostExecute(result: Void?) {
+                            super.onPostExecute(result)
+                            mainActivity.navController.popBackStack()
 
+                        }
                     }
+                    insertClass().execute()
+                }else{
+                    var note = Notes(title= binding.etTitle.text.toString(), description = binding.etDescription.text.toString())
+                    class insertClass : AsyncTask<Void, Void, Void>(){
+                        override fun doInBackground(vararg params: Void?): Void? {
+                            notesDB.notesDbInterface().insertNotes(note)
+                            return null
+                        }
+
+                        override fun onPostExecute(result: Void?) {
+                            super.onPostExecute(result)
+                            mainActivity.navController.popBackStack()
+
+                        }
+                    }
+                    insertClass().execute()
                 }
-                insertClass().execute()
                 //mainActivity.noteList.add(note)
             }
         }
@@ -81,6 +98,13 @@ class AddNotesFragment : Fragment() {
             override fun doInBackground(vararg params: Void?): Void? {
                 notes = notesDB.notesDbInterface().getNotesById(id)
                 return null
+            }
+
+            override fun onPostExecute(result: Void?) {
+                super.onPostExecute(result)
+                binding.etTitle.setText(notes.title)
+                binding.etDescription.setText(notes.description)
+                binding.btnAdd.setText("Update")
             }
 
         }
