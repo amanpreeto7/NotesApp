@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.TextView
+import com.o7solutions.notesapp.entities.Notes
 
 /**
  * @Author: 017

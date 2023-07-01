@@ -2,13 +2,13 @@ package com.o7solutions.notesapp
 
 import android.os.AsyncTask
 import android.os.Bundle
-import android.provider.ContactsContract.CommonDataKinds.Note
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import com.o7solutions.notesapp.databinding.FragmentNotesListBinding
+import com.o7solutions.notesapp.entities.Notes
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

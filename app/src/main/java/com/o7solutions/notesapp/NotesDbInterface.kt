@@ -5,6 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.o7solutions.notesapp.entities.Notes
+import com.o7solutions.notesapp.entities.TodoEntity
 
 /**
  * @Author: 017
@@ -15,7 +17,7 @@ import androidx.room.Update
 interface NotesDbInterface {
 
     @Insert
-    fun insertNotes(notes: Notes)
+    fun insertNotes(notes: Notes) : Long
 
     @Query("SELECT * FROM Notes")
     fun getNotes() : List<Notes>
@@ -28,4 +30,8 @@ interface NotesDbInterface {
 
     @Query("SELECT * FROM Notes WHERE id = :id")
     fun getNotesById(id: Int) : Notes
+
+
+    @Insert
+    fun insertTodo(todoEntity: TodoEntity) : Long
 }

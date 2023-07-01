@@ -25,12 +25,6 @@
         android:layout_height="wrap_content"
         android:text="@string/description"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add"
-        android:id="@+id/btnAdd"/>
-
     <TextView
         android:id="@+id/tvPickDate"
         android:layout_width="wrap_content"
@@ -38,6 +32,26 @@
         android:padding="@dimen/margin_5dp"
         android:textSize="@dimen/margin_20sp"
         android:text="@string/pick_date"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:id="@+id/btnAddTodo"
+        android:text="@string/add_to_do"/>
+
+    <ListView
+        android:id="@+id/lvTodo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:layout_gravity="center"
+        android:id="@+id/btnAdd"/>
 
 
 </LinearLayout>

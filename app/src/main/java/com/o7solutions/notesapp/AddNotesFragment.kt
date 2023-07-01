@@ -7,7 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.o7solutions.notesapp.adapters.ToDoListAdapter
 import com.o7solutions.notesapp.databinding.FragmentAddNotesBinding
+import com.o7solutions.notesapp.entities.Notes
+import com.o7solutions.notesapp.entities.TodoEntity
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -21,7 +24,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [AddNotesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AddNotesFragment : Fragment() {
+class AddNotesFragment : Fragment(), ToDoClickInterface {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -30,6 +33,8 @@ class AddNotesFragment : Fragment() {
     lateinit var notesDB: NotesDB
     private var id = -1
     var notes = Notes()
+    lateinit var toDoListAdapter : ToDoListAdapter
+    var todoList = ArrayList<TodoEntity>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainActivity = activity as MainActivity
@@ -52,6 +57,13 @@ class AddNotesFragment : Fragment() {
             if(id>-1){
                 getEntityInfo()
             }
+        }
+        toDoListAdapter = ToDoListAdapter(todoList, this)
+        binding.lvTodo.adapter = toDoListAdapter
+
+        binding.btnAddTodo.setOnClickListener {
+            todoList.add(TodoEntity())
+            toDoListAdapter.notifyDataSetChanged()
         }
         binding.btnAdd.setOnClickListener {
             if(binding.etTitle.text.toString().isNullOrBlank()){
@@ -76,16 +88,18 @@ class AddNotesFragment : Fragment() {
                     updateClass().execute()
                 }else{
                     var note = Notes(title= binding.etTitle.text.toString(), description = binding.etDescription.text.toString())
+                    var notesId = -1L
                     class insertClass : AsyncTask<Void, Void, Void>(){
                         override fun doInBackground(vararg params: Void?): Void? {
-                            notesDB.notesDbInterface().insertNotes(note)
+
+                            notesId = notesDB.notesDbInterface().insertNotes(note)
                             return null
                         }
 
                         override fun onPostExecute(result: Void?) {
                             super.onPostExecute(result)
-                            mainActivity.navController.popBackStack()
-
+                           // mainActivity.navController.popBackStack()
+                            addTodo(notesId)
                         }
                     }
                     insertClass().execute()
@@ -121,10 +135,31 @@ class AddNotesFragment : Fragment() {
                 binding.etTitle.setText(notes.title)
                 binding.etDescription.setText(notes.description)
                 binding.btnAdd.setText("Update")
+                toDoListAdapter.isEnableTextView(false)
             }
 
         }
         getEntity().execute()
+    }
+
+    private fun addTodo(notesId: Long) {
+
+        for(items in todoList) {
+            items.notesId = notesId.toInt()
+            class insertClass : AsyncTask<Void, Void, Void>() {
+                override fun doInBackground(vararg params: Void?): Void? {
+
+                    notesDB.notesDbInterface().insertTodo(items)
+                    return null
+                }
+
+                override fun onPostExecute(result: Void?) {
+                    super.onPostExecute(result)
+                     mainActivity.navController.popBackStack()
+                }
+            }
+            insertClass().execute()
+        }
     }
 
     companion object {
@@ -145,5 +180,13 @@ class AddNotesFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onCheckboxClick(todoEntity: TodoEntity) {
+
+    }
+
+    override fun onTextChanged(position: Int, text: String) {
+        todoList[position].task = text?:""
     }
 }

@@ -1,4 +1,4 @@
-package com.o7solutions.notesapp
+package com.o7solutions.notesapp.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
