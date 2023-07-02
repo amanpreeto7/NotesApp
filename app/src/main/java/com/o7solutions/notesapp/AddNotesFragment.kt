@@ -1,18 +1,22 @@
 package com.o7solutions.notesapp
 
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Base64
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import com.o7solutions.notesapp.adapters.ToDoListAdapter
 import com.o7solutions.notesapp.databinding.FragmentAddNotesBinding
 import com.o7solutions.notesapp.entities.Notes
@@ -90,7 +94,29 @@ class AddNotesFragment : Fragment(), ToDoClickInterface {
         }
 
         binding.imageView.setOnClickListener{
-            requestResult.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            when {
+                ContextCompat.checkSelfPermission(
+                    mainActivity,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // You can use the API that requires the permission.
+                    imagePicker.launch("image/*")
+                }
+                shouldShowRequestPermissionRationale(android.Manifest.permission.READ_EXTERNAL_STORAGE)->{
+                    val intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                    )
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                }
+
+                else -> {
+                    // You can directly ask for the permission.
+                    // The registered ActivityResultCallback gets the result of this request.
+                    requestResult.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+            }
         }
         binding.btnAdd.setOnClickListener {
             if(binding.etTitle.text.toString().isNullOrBlank()){
