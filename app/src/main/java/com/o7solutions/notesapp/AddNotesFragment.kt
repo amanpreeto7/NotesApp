@@ -1,16 +1,23 @@
 package com.o7solutions.notesapp
 
 import android.app.DatePickerDialog
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Base64
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import com.o7solutions.notesapp.adapters.ToDoListAdapter
 import com.o7solutions.notesapp.databinding.FragmentAddNotesBinding
 import com.o7solutions.notesapp.entities.Notes
 import com.o7solutions.notesapp.entities.TodoEntity
+import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -35,6 +42,22 @@ class AddNotesFragment : Fragment(), ToDoClickInterface {
     var notes = Notes()
     lateinit var toDoListAdapter : ToDoListAdapter
     var todoList = ArrayList<TodoEntity>()
+    var uri : Uri?= null
+
+    var requestResult = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+        if(it){
+            imagePicker.launch("image/*")
+        }else{
+            //alert dialog
+        }
+    }
+
+    var imagePicker = registerForActivityResult(ActivityResultContracts.GetContent()){
+        it?.let{
+            uri = it
+            binding.imageView.setImageURI(it)
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainActivity = activity as MainActivity
@@ -65,6 +88,10 @@ class AddNotesFragment : Fragment(), ToDoClickInterface {
             todoList.add(TodoEntity())
             toDoListAdapter.notifyDataSetChanged()
         }
+
+        binding.imageView.setOnClickListener{
+            requestResult.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
         binding.btnAdd.setOnClickListener {
             if(binding.etTitle.text.toString().isNullOrBlank()){
                 binding.etTitle.error = mainActivity.resources.getString(R.string.enter_title)
@@ -87,7 +114,13 @@ class AddNotesFragment : Fragment(), ToDoClickInterface {
                     }
                     updateClass().execute()
                 }else{
+
                     var note = Notes(title= binding.etTitle.text.toString(), description = binding.etDescription.text.toString())
+                    if(uri != null){
+                       var btmap = MediaStore.Images.Media.getBitmap(mainActivity.contentResolver, uri)
+
+                        note.image = encodeToBase64(btmap)
+                    }
                     var notesId = -1L
                     class insertClass : AsyncTask<Void, Void, Void>(){
                         override fun doInBackground(vararg params: Void?): Void? {
@@ -135,11 +168,32 @@ class AddNotesFragment : Fragment(), ToDoClickInterface {
                 binding.etTitle.setText(notes.title)
                 binding.etDescription.setText(notes.description)
                 binding.btnAdd.setText("Update")
+                if(notes.image != null){
+                    binding.imageView.setImageBitmap(decodeBase64(notes.image))
+                }
+                getTodoList()
                 toDoListAdapter.isEnableTextView(false)
             }
 
         }
         getEntity().execute()
+    }
+
+    fun getTodoList(){
+        class todoEntity : AsyncTask<Void, Void, Void>(){
+            override fun doInBackground(vararg params: Void?): Void? {
+                todoList.addAll(notesDB.notesDbInterface().getTodoById(id))
+                return null
+            }
+
+            override fun onPostExecute(result: Void?) {
+                super.onPostExecute(result)
+                toDoListAdapter.notifyDataSetChanged()
+                toDoListAdapter.isEnableTextView(false)
+            }
+
+        }
+        todoEntity().execute()
     }
 
     private fun addTodo(notesId: Long) {
@@ -188,5 +242,40 @@ class AddNotesFragment : Fragment(), ToDoClickInterface {
 
     override fun onTextChanged(position: Int, text: String) {
         todoList[position].task = text?:""
+    }
+
+    //use this method to convert the selected image to bitmap to save in database
+    fun encodeToBase64(image: Bitmap): String? {
+        var imageEncoded: String = ""
+        var imageConverted = getResizedBitmap(image, 500)
+        val baos = ByteArrayOutputStream()
+        imageConverted?.let {
+            imageConverted.compress(Bitmap.CompressFormat.PNG, 100, baos)
+            val b: ByteArray = baos.toByteArray()
+            imageEncoded = Base64.encodeToString(b, Base64.DEFAULT)
+        }
+
+        return imageEncoded
+    }
+
+    //use this method to convert the saved string to bitmap
+    fun decodeBase64(input: String?): Bitmap? {
+        val decodedByte: ByteArray = Base64.decode(input, 0)
+        return BitmapFactory
+            .decodeByteArray(decodedByte, 0, decodedByte.size)
+    }
+
+    fun getResizedBitmap(image: Bitmap, maxSize: Int): Bitmap? {
+        var width = image.width
+        var height = image.height
+        val bitmapRatio = width.toFloat() / height.toFloat()
+        if (bitmapRatio > 1) {
+            width = maxSize
+            height = (width / bitmapRatio).toInt()
+        } else {
+            height = maxSize
+            width = (height * bitmapRatio).toInt()
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true)
     }
 }

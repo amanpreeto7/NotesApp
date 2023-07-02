@@ -17,4 +17,6 @@ data class Notes(
     var title: String?= null,
     @ColumnInfo()
     var description: String?= null,
+    @ColumnInfo()
+    var image: String?= null,
 )

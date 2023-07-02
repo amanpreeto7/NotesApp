@@ -34,4 +34,7 @@ interface NotesDbInterface {
 
     @Insert
     fun insertTodo(todoEntity: TodoEntity) : Long
+
+    @Query("SELECT * FROM TodoEntity WHERE id = :id")
+    fun getTodoById(id: Int) : List<TodoEntity>
 }
