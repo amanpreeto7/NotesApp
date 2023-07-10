@@ -105,7 +105,7 @@ class AddNotesFragment : Fragment(), ToDoClickInterface {
                 shouldShowRequestPermissionRationale(android.Manifest.permission.READ_EXTERNAL_STORAGE)->{
                     val intent = Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                        Uri.fromParts("package", "com.o7solutions.notesapp", null)
                     )
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)

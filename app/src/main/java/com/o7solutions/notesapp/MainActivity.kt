@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.notesList)
                 }
                 R.id.addNotes ->{
-                    navController.navigate(R.id.addNotesFragment)
+                    navController.navigate(R.id.recyclerFragment)
                 }
             }
             return@setOnItemSelectedListener true

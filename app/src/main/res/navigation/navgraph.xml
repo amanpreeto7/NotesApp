@@ -16,4 +16,9 @@
         android:name="com.o7solutions.notesapp.AddNotesFragment"
         android:label="fragment_add_notes"
         tools:layout="@layout/fragment_add_notes" />
+    <fragment
+        android:id="@+id/recyclerFragment"
+        android:name="com.o7solutions.notesapp.RecyclerFragment"
+        android:label="fragment_recycler"
+        tools:layout="@layout/fragment_recycler" />
 </navigation>
